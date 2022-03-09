@@ -22,7 +22,7 @@ app = (function(){
         const _blueprintAuthorH2 = $('#blueprintsAuthorH2');
         
         // Canvas buttons
-        const _createBlueprintBtn = $('#createBlueprintBtn');
+        const _createBlueprintBtn = $('#createBlueprintBtn')[0];
         const _updateCanvasBtn = $('#updateCanvasBtn');
         const _deleteBlueprintBtn = $('#deleteBlueprintBtn');
 
@@ -148,7 +148,7 @@ app = (function(){
             if (_selectedAuthorName === null) {
                 _module.getBlueprintsByAuthor(_selectedAuthorName, callback);
             } else {
-                _module.getBlueprintsByNameAndAuthor(blueprintName, _selectedAuthorName, callback)
+                _module.getBlueprintsByNameAndAuthor(_selectedAuthorName,blueprintName, callback)
             }
         }
 
@@ -189,11 +189,12 @@ app = (function(){
             _getBlueprintsBtn.addEventListener('click', getBlueprints);
             
             // Init the canvas methods
-            debugger;
             _module_canvas.init();
-
-            _updateCanvasBtn.addEventListener('click', updateBlueprint);
-            _deleteBlueprintBtn.addEventListener('click', deleteBlueprint);
+            
+            // _updateCanvasBtn.addEventListener('click', updateBlueprint);
+            // _deleteBlueprintBtn.addEventListener('click', deleteBlueprint);
+            
+            debugger;
             _createBlueprintBtn.addEventListener('click', createBlueprint);
         }
 
