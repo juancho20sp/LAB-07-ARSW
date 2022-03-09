@@ -1,21 +1,36 @@
 app = (function(){
-//      ESTA LÍNEA ES LA QUE CAMBIA EL apimock Y EL apiclient
+        // MODULES
+        // ESTA LÍNEA ES LA QUE CAMBIA EL apimock Y EL apiclient
         let _module = apimock;
-//        let _module = apiclient;
+        // let _module = apiclient;
+        let _module_canvas = module_canvas;
+        
         let _selectedAuthorName;
         let _blueprintsByAuthor = [];
         let _totalPoints;
         let _totalPointsLabel;
         let _blueprintName;
 
+        let _listOfBlueprints;
+        let _currentBlueprint = '';
+
         const _tableBody = $('#table-body');
         const _getBlueprintsBtn = document.querySelector('#getBlueprintsBtn');
         _totalPointsLabel = document.querySelector('#totalUserPoints');
         _blueprintName = $('#blueprintName');
 
+        const _blueprintAuthorH2 = $('#blueprintsAuthorH2');
+        
+        // Canvas buttons
+        const _createBlueprintBtn = $('#createBlueprintBtn');
+        const _updateCanvasBtn = $('#updateCanvasBtn');
+        const _deleteBlueprintBtn = $('#deleteBlueprintBtn');
+
+        // $
+        loadEventListeners();
 
         // Functions
-        const blueprintsCallback = (blueprintsList) => {
+        function blueprintsCallback(blueprintsList) {
             const list = blueprintsList.map(blueprint => {
                 return {
                     name: blueprint.name,
@@ -47,7 +62,34 @@ app = (function(){
             _totalPointsLabel.innerHTML = _totalPoints;
         }
 
-        const draw = (blueprintName) => {
+        function myCallback(err, mockDataAuthor) {
+            if (err !== null) {
+                return;
+            }
+
+            _listOfBlueprints = mockDataAuthor.map(blueprint => {
+                const data = {
+                    name: blueprint.name,
+                    numberOfPoints: blueprint.points.length
+                };
+
+                return data;
+            });
+
+            _totalPoints = _listOfBlueprints.reduce((total, { numberOfPoints }) => total + numberOfPoints, 0);
+
+            // Update HTML
+            addDataAndPutHTML(_totalPoints);
+        };
+
+        function updateData( totalOfPoints ) {
+            _totalPointsLabel.text(`Total points: ${totalOfPoints}`);
+            _blueprintAuthorH2.text(`${_selectedAuthorName}`);
+            _blueprintName.text(`Current Blueprint`);
+        }
+
+
+        function draw(blueprintName) {
             _blueprintName.text(`Blueprint: ${blueprintName}`);
 
             _module.getBlueprintsByNameAndAuthor(_selectedAuthorName, blueprintName, (data) => {
@@ -76,26 +118,86 @@ app = (function(){
             });
         }
 
-        const readInputData = () => {
+        function addDataAndPutHTML(totalOfPoints) {
+            updateData(totalOfPoints);
+
+            // Clear the table
+            _tableBody.empty();
+
+            _listOfBlueprints.map (blueprint => {
+                const {name, numberOfPoints } = blueprint;
+                const row = document.createElement('tr');
+                const button = `<button class="btn btn-success" onclick="app.drawBlueprint('${name}')"> Open </button>`;
+                row.innerHTML=`
+                                <td>${name}</td>
+                                <td>${numberOfPoints}</td>
+                                <td>${button}</td>`;
+                
+                                // Add to the table
+                _tableBody.append(row);
+            })
+
+        };
+
+        function readInputData(blueprintName, callback = myCallback) {
+            // Clear the existing data
+            _listOfBlueprints = [];
+            
             _selectedAuthorName = $('#authorName').val();
 
-            if (_selectedAuthorName) {
-                _module.getBlueprintsByAuthor(_selectedAuthorName, blueprintsCallback);
+            if (_selectedAuthorName === null) {
+                _module.getBlueprintsByAuthor(_selectedAuthorName, callback);
+            } else {
+                _module.getBlueprintsByNameAndAuthor(blueprintName, _selectedAuthorName, callback)
             }
         }
 
-        const getBlueprints = (event) => {
+        function getBlueprints(event){
             event.preventDefault();
-            readInputData();
+
+            _currentBlueprint = '';
+            _module_canvas.clear();
+
+            readInputData(null);
+        }
+
+        function createBlueprint(){
+            _module_canvas.clear();
+            _selectedAuthorName = $('#authorName').val();
+            if (_selectedAuthorName === '') {
+                alert("No se puede crear un blueprint sin haber seleccionado un autor.");
+                return;
+            }
+
+            const blueprintName = prompt("Nombre del blueprint: ", "Nombre del nuevo blueprint");
+
+            if (blueprintName === '' || blueprintName === null){
+                alert("No se puede crear un blueprint sin nombre.");
+                return;
+            }
+            const newBlueprint = {author: _selectedAuthorName, name: blueprintName, points: []};
+            _module.postBlueprint( JSON.stringify(newBlueprint), readInputData);
         }
 
 
         // EVENT LISTENERS
-        const loadEventListeners = () => {
+        function loadEventListeners() {
+            // if (!_getBlueprintsBtn) {
+            //     return;
+            // }
+
             _getBlueprintsBtn.addEventListener('click', getBlueprints);
+            
+            // Init the canvas methods
+            debugger;
+            _module_canvas.init();
+
+            _updateCanvasBtn.addEventListener('click', updateBlueprint);
+            _deleteBlueprintBtn.addEventListener('click', deleteBlueprint);
+            _createBlueprintBtn.addEventListener('click', createBlueprint);
         }
 
-        loadEventListeners();
+        
 
         return {
             setModule: (module = apimock) => {
@@ -120,6 +222,12 @@ app = (function(){
 
             drawBlueprint: (blueprintName) => {
                 draw(blueprintName)
+            },
+            getCurrentBlueprint: () => {
+                return _currentBlueprint;
+            },
+            createNewBlueprint: () => {
+                
             }
 
         }

@@ -15,53 +15,63 @@
 </head>
 
 <body>
-<h1 class="jumbotron mt-0">Blueprints</h1>
+    <h1 class="jumbotron mt-0">Blueprints</h1>
 
-<form class="form-inline" style="width: 30vw; margin: 0 auto;">
-    <div class="form-group">
-        <label for="authorName">Author</label>
-        <input type="text" id="authorName" class="form-control">
-        <button class="btn btn-primary" id="getBlueprintsBtn">Get blueprints</button>
-    </div>
-    <br />
-    <small class="form-text text-muted">(Si está usando apiclient en lugar de apimock, por favor dé click otra vez sobre el botón de búsqueda)</small>
-</form>
+    <form class="form-inline" style="width: 30vw; margin: 0 auto;">
+        <div class="form-group">
+            <label for="authorName">Author</label>
+            <input type="text" id="authorName" class="form-control">
+            <button class="btn btn-primary" id="getBlueprintsBtn">Get blueprints</button>
 
-
-<main>
-    <div>
-        <h2>Author blueprints</h2>
-<!--        style="width: 50vw; margin: 0 auto;"-->
-        <table class="table table-dark">
-            <thead>
-            <tr>
-                <th>Blueprint name</th>
-                <th>Number of points</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="table-body">
-            </tbody>
-        </table>
-
-<!--        style="width: 100vw; text-align: center;"-->
-        <h2>Total user points: <span id="totalUserPoints"></span></h2>
-    </div>
-
-    <!-- Canvas -->
-    <section>
-        <h3 id="blueprintName">Current blueprint:</h3>
-<!--        height="800" width="800"-->
-        <canvas id="canvas" height="800%" width="800%"></canvas>
-    </section>
-</main>
+            <!-- Create blueprint -->
+            <button id="createBlueprintBtn" class="btn btn-dark">Create blueprint</button>
+        </div>
+        <br />
+        <small class="form-text text-muted">(Si está usando apiclient en lugar de apimock, por favor dé click otra vez
+            sobre el botón de búsqueda)</small>
+    </form>
 
 
+    <main>
+        <div>
+            <h2><span id="blueprintsAuthorH2">Author</span> blueprints</h2>
+            <!--        style="width: 50vw; margin: 0 auto;"-->
+            <table class="table table-dark">
+                <thead>
+                    <tr>
+                        <th>Blueprint name</th>
+                        <th>Number of points</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
 
-<!-- Scripts -->
-<script src="js/apimock.js"></script>
-<script src="js/apiclient.js"></script>
-<script src="js/app.js"></script>
+            <!--        style="width: 100vw; text-align: center;"-->
+            <h2>Total user points: <span id="totalUserPoints"></span></h2>
+        </div>
+
+        <!-- Canvas -->
+        <section>
+            <h3 id="blueprintName">Current blueprint:</h3>
+            <!--        height="800" width="800"-->
+            <canvas id="canvas" height="800px" width="800px"></canvas>
+
+            <div>
+                <button id="updateCanvasBtn" class="btn btn-success"> Save / Update</button>
+                <button id="deleteBlueprintBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </section>
+    </main>
+
+
+
+    <!-- Scripts -->
+    <script src="js/apimock.js"></script>
+    <script src="js/apiclient.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>
