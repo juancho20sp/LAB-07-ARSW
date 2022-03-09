@@ -1,0 +1,14 @@
+¿Qué condiciones de carrera se podrían presentar?
+    * Consultar un plano mientras este está siendo modificado.
+    * Modificar el mismo plano al tiempo por dos peticiones.
+    * Agregar un nuevo plano cuando se están consultando los planos.
+
+¿Cuales son las respectivas regiones críticas?
+    * Las regiones criticas se encontrarían en los distintos métodos(GET, PUT, POST)
+    ya que son los que se consumen y podrían presentar comportaminetos extraños al
+    intentar entrar de manera concurrente a ellos.
+
+Condición carrera identificada.
+    El recurso compartido que tienen todos los métodos en común es el HashMap blueprints, para
+    solucionar el problema, se cambió el HashMap que venía por defecto por un ConcurrentHashMap,
+    ya que está clase controla las zonas críticas por sí misma.

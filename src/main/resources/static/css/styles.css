@@ -1,0 +1,14 @@
+main {
+    display: flex;
+    justify-content: space-between;
+}
+
+main div {
+    width: 50%;
+    padding-right: 15px;
+}
+
+main section {
+    width: 50%;
+}
+
