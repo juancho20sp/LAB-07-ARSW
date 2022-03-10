@@ -16,15 +16,17 @@ app = (function(){
 
         const _tableBody = $('#table-body');
         const _getBlueprintsBtn = document.querySelector('#getBlueprintsBtn');
-        _totalPointsLabel = document.querySelector('#totalUserPoints');
+        _totalPointsLabel = $('#totalUserPoints');
         _blueprintName = $('#blueprintName');
 
         const _blueprintAuthorH2 = $('#blueprintsAuthorH2');
         
         // Canvas buttons
+        let _basePoints = [];
+
         const _createBlueprintBtn = $('#createBlueprintBtn')[0];
-        const _updateCanvasBtn = $('#updateCanvasBtn');
-        const _deleteBlueprintBtn = $('#deleteBlueprintBtn');
+        const _updateCanvasBtn = $('#updateCanvasBtn')[0];
+        const _deleteBlueprintBtn = $('#deleteBlueprintBtn')[0];
 
         // $
         loadEventListeners();
@@ -83,6 +85,8 @@ app = (function(){
         };
 
         function updateData( totalOfPoints ) {
+            // $
+            // debugger;
             _totalPointsLabel.text(`Total points: ${totalOfPoints}`);
             _blueprintAuthorH2.text(`${_selectedAuthorName}`);
             _blueprintName.text(`Current Blueprint`);
@@ -92,12 +96,31 @@ app = (function(){
         function draw(blueprintName) {
             _blueprintName.text(`Blueprint: ${blueprintName}`);
 
-            _module.getBlueprintsByNameAndAuthor(_selectedAuthorName, blueprintName, (data) => {
-                const _canvas = $('#canvas')[0];
+            // $
+            const _canvas = $('#canvas')[0];
+            // _basePoints = [];
+            _currentBlueprint = blueprintName;
+            _canvas.width = _canvas.width;
 
-                let myData = data.length > 0 ? data[0] : data;
+            _module.getBlueprintsByNameAndAuthor(_selectedAuthorName, blueprintName, (err, data) => {
+                
+                // $
+                debugger;
 
-                const { points } = myData;
+                if (_module_canvas.getCurrentPoints().length > 0) {
+                    data = _module_canvas.getCurrentPoints();
+                    // $
+                    debugger;
+                    _basePoints = [..._basePoints, ...data[0].points];
+                } else {
+                    _basePoints = [...data[0].points];
+                }
+
+                // let myData = data.length > 0 ? data[0] : data;
+
+                // const { points } = myData;
+
+                const points = _basePoints;
 
                 if (_canvas.getContext) {
                     const context = _canvas.getContext('2d');
@@ -145,7 +168,10 @@ app = (function(){
             
             _selectedAuthorName = $('#authorName').val();
 
-            if (_selectedAuthorName === null) {
+            // $
+            // debugger;
+
+            if (blueprintName === null) {
                 _module.getBlueprintsByAuthor(_selectedAuthorName, callback);
             } else {
                 _module.getBlueprintsByNameAndAuthor(_selectedAuthorName,blueprintName, callback)
@@ -154,6 +180,9 @@ app = (function(){
 
         function getBlueprints(event){
             event.preventDefault();
+
+            // $
+            // debugger;
 
             _currentBlueprint = '';
             _module_canvas.clear();
@@ -176,9 +205,54 @@ app = (function(){
                 return;
             }
             const newBlueprint = {author: _selectedAuthorName, name: blueprintName, points: []};
-            _module.postBlueprint( JSON.stringify(newBlueprint), readInputData);
+
+            // TODO
+            // _module.postBlueprint( JSON.stringify(newBlueprint), readInputData);
         }
 
+
+        function callB2 (error , mockDataAuthor) {
+            if( error !== null  ){ return;}
+            _listOfBlueprints = [...mockDataAuthor];
+            const blueprint = _listOfBlueprints[0];
+            if(blueprint) {
+                let { author, name, points } = blueprint;
+                points = [...points, ..._module_canvas.getCurrentPoints()];
+                // Objeto consultado por autor y nombre de plano
+                blueprint.points = points; 
+
+                // TODO
+                // _module.putBlueprint( name, author, JSON.stringify(bp), readInputData );
+            }
+        }
+        
+        function callB3 (error , mockDataAuthor) {
+            if( error !== null  ){ return;}
+            _listOfBlueprints = [...mockDataAuthor];
+            const bp = _listOfBlueprints[0];
+            if( bp ){
+                var { author, name } = bp;
+                _module.deleteBlueprint( name, author, JSON.stringify(bp), readInputData );
+            }
+        }
+
+        function updateBlueprint() {
+            if (_currentBlueprint === '') {
+                return;
+            }
+
+            readInputData( _currentBlueprint, callB2);        
+        }
+        
+    
+        function deleteBlueprint(){
+            if (_currentBlueprint === '') {
+                return;
+            }
+
+            _module_canvas.clear();
+            readInputData( _currentBlueprint, callB3);        
+        }
 
         // EVENT LISTENERS
         function loadEventListeners() {
@@ -186,15 +260,19 @@ app = (function(){
             //     return;
             // }
 
+            
+
             _getBlueprintsBtn.addEventListener('click', getBlueprints);
             
             // Init the canvas methods
+            // $
+            // debugger;
             _module_canvas.init();
             
-            // _updateCanvasBtn.addEventListener('click', updateBlueprint);
-            // _deleteBlueprintBtn.addEventListener('click', deleteBlueprint);
+            _updateCanvasBtn.addEventListener('click', updateBlueprint);
+            _deleteBlueprintBtn.addEventListener('click', deleteBlueprint);
             
-            debugger;
+            
             _createBlueprintBtn.addEventListener('click', createBlueprint);
         }
 

@@ -10,7 +10,13 @@ var module_canvas = (function(){
 
     const loadEventListeners = () => {
         if (window.PointerEvent) {
+            // $
+            // debugger;
+
             _canvas.addEventListener('pointerdown', (event) => {
+                // $
+                // debugger;
+
                 _currentBlueprint = app.getCurrentBlueprint();
 
                 if (!_currentBlueprint) {
@@ -22,7 +28,7 @@ var module_canvas = (function(){
                     _points = [];
                 }
 
-                const { pageX, pageY } = event;
+                let { pageX, pageY } = event;
 
                 _lastBlueprint = _currentBlueprint;
 
@@ -35,6 +41,9 @@ var module_canvas = (function(){
                 };
 
                 _points.push(newPoint);
+
+                // $
+                debugger;
                 app.drawBlueprint(_currentBlueprint);
             });
         } else {
@@ -89,7 +98,15 @@ var module_canvas = (function(){
             },
 
             getCurrentPoints: () => {
-                return _points;
+                if (_points.length > 0){
+                    return [{
+                        points: _points
+                    }];
+                } else {
+                    return _points;
+                }
+
+                
             }
         }
 })();

@@ -20,17 +20,24 @@ apimock=(function(){
 	return {
 		getBlueprintsByAuthor:function(authname,callback){
 			callback(
-				mockdata[authname]
+				null, mockdata[authname]
 			);
 		},
 
 		getBlueprintsByNameAndAuthor:function(authname,bpname,callback){
 			// $
-			debugger;
+			// debugger;
+			if( mockdata[authname] === null ) return;
 			
-			callback(
-				mockdata[authname].find(function(e){return e.name===bpname})
-			);
+			// callback(
+			// 	mockdata[authname].find(function(e){return e.name===bpname})
+			// );
+
+			
+            const blueprint = mockdata[authname].find(function(blueprint) {
+                return blueprint.name == bpname;
+            });
+            callback(null, [blueprint] || []);
 		}
 	}	
 
