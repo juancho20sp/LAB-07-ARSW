@@ -1,8 +1,8 @@
 app = (function(){
         // MODULES
         // ESTA LÍNEA ES LA QUE CAMBIA EL apimock Y EL apiclient
-        let _module = apimock;
-        // let _module = apiclient;
+        // let _module = apimock;
+        let _module = apiclient;
         let _module_canvas = module_canvas;
         
         let _selectedAuthorName;
@@ -85,8 +85,6 @@ app = (function(){
         };
 
         function updateData( totalOfPoints ) {
-            // $
-            // debugger;
             _totalPointsLabel.text(`Total points: ${totalOfPoints}`);
             _blueprintAuthorH2.text(`${_selectedAuthorName}`);
             _blueprintName.text(`Current Blueprint`);
@@ -104,21 +102,12 @@ app = (function(){
 
             _module.getBlueprintsByNameAndAuthor(_selectedAuthorName, blueprintName, (err, data) => {
                 
-                // $
-                debugger;
-
                 if (_module_canvas.getCurrentPoints().length > 0) {
                     data = _module_canvas.getCurrentPoints();
-                    // $
-                    debugger;
-                    // _basePoints = [..._basePoints, ...data[0].points];
                     _basePoints = [..._basePoints, data[0].points[data[0].points.length - 1]];
                 } else {
                     _basePoints = [...data[0].points];
                 }
-
-                // $
-                console.log(_basePoints);
                 
 
                 // let myData = data.length > 0 ? data[0] : data;
@@ -134,14 +123,16 @@ app = (function(){
                     context.clearRect(0, 0, _canvas.width, _canvas.height);
                     _canvas.width = _canvas.width;
 
-                    context.moveTo(points[0].x, points[0].y);
+                    if (points.length) {
+                        context.moveTo(points[0].x, points[0].y);
 
-                    points.forEach(point => {
-                        const { x, y } = point;
-                        context.lineTo(x, y);
-                    });
-
-                    context.stroke();
+                        points.forEach(point => {
+                            const { x, y } = point;
+                            context.lineTo(x, y);
+                        });
+    
+                        context.stroke();
+                    }                    
                 }
             });
         }
@@ -161,20 +152,24 @@ app = (function(){
                                 <td>${numberOfPoints}</td>
                                 <td>${button}</td>`;
                 
-                                // Add to the table
-                _tableBody.append(row);
+                // Add to the table
+                if (_tableBody.length > 0){
+                    _tableBody[0].append(row);
+                } else {
+                    _tableBody.append(row);
+                }
             })
 
         };
 
         function readInputData(blueprintName, callback = myCallback) {
+            // $
+            debugger;
+
             // Clear the existing data
             _listOfBlueprints = [];
             
             _selectedAuthorName = $('#authorName').val();
-
-            // $
-            // debugger;
 
             if (blueprintName === null) {
                 _module.getBlueprintsByAuthor(_selectedAuthorName, callback);
@@ -186,16 +181,17 @@ app = (function(){
         function getBlueprints(event){
             event.preventDefault();
 
-            // $
-            // debugger;
-
             _currentBlueprint = '';
             _module_canvas.clear();
 
             readInputData(null);
         }
 
-        function createBlueprint(){
+        function createBlueprint(event){
+            event.preventDefault();
+            // $
+            debugger;
+
             _module_canvas.clear();
             _selectedAuthorName = $('#authorName').val();
             if (_selectedAuthorName === '') {
@@ -212,7 +208,13 @@ app = (function(){
             const newBlueprint = {author: _selectedAuthorName, name: blueprintName, points: []};
 
             // TODO
-            // _module.postBlueprint( JSON.stringify(newBlueprint), readInputData);
+            if (_module.postBlueprint){
+                _module.postBlueprint( JSON.stringify(newBlueprint), myCallback);
+
+                // setTimeout(1000, _module.getBlueprintsByAuthor(author, myCallback));
+                
+            }
+            
         }
 
 
@@ -222,12 +224,18 @@ app = (function(){
             const blueprint = _listOfBlueprints[0];
             if(blueprint) {
                 let { author, name, points } = blueprint;
-                points = [...points, ..._module_canvas.getCurrentPoints()];
+                points = [...points, ..._module_canvas.getCurrentPoints()[0].points];
                 // Objeto consultado por autor y nombre de plano
                 blueprint.points = points; 
 
                 // TODO
-                // _module.putBlueprint( name, author, JSON.stringify(bp), readInputData );
+                if (_module.putBlueprint){
+                    // _module.putBlueprint(author, name, JSON.stringify(blueprint), readInputData );
+                    _module.putBlueprint(author, name, JSON.stringify(blueprint), myCallback );
+
+                    // $
+                    _module.getBlueprintsByAuthor(author, myCallback);
+                }                
             }
         }
         
@@ -237,7 +245,10 @@ app = (function(){
             const bp = _listOfBlueprints[0];
             if( bp ){
                 var { author, name } = bp;
-                _module.deleteBlueprint( name, author, JSON.stringify(bp), readInputData );
+
+                if (_module.deleteBlueprint) {
+                    _module.deleteBlueprint(author, name, JSON.stringify(bp), myCallback );
+                }                
             }
         }
 
@@ -247,6 +258,7 @@ app = (function(){
             }
 
             readInputData( _currentBlueprint, callB2);        
+            // readInputData( null, callB2);        
         }
         
     
@@ -270,8 +282,6 @@ app = (function(){
             _getBlueprintsBtn.addEventListener('click', getBlueprints);
             
             // Init the canvas methods
-            // $
-            // debugger;
             _module_canvas.init();
             
             _updateCanvasBtn.addEventListener('click', updateBlueprint);

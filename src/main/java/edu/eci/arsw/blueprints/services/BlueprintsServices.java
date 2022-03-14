@@ -64,6 +64,18 @@ public class BlueprintsServices {
         return filter.blueprintsFilter(bpp.getBlueprintsByAuthor(author));
     }
 
+    /**
+     *
+     * @param author blueprint's author
+     * @param name blueprint's name
+     * @return the blueprint of the given name created by the given author
+     * @throws BlueprintNotFoundException if there is no such blueprint
+     */
+    public Blueprint deleteBlueprint(String author, String name) throws BlueprintNotFoundException{
+        // TODO -> ELIMINAR BLUEPRINT
+        return filter.blueprintFilter(bpp.getBlueprint(author, name));
+    }
+
 
 }
 

@@ -33,7 +33,6 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
     public InMemoryBlueprintPersistence() {
         //load stub data
         loadNewData();
-
     }
 
     public void loadNewData(){
@@ -95,5 +94,10 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
         }
 
         return myBlueprints;
+    }
+
+    @Override
+    public Blueprint deleteBlueprint(String author, String bprintname) throws BlueprintNotFoundException {
+        return null;
     }
 }

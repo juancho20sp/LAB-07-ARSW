@@ -5,6 +5,7 @@
  */
 package edu.eci.arsw.blueprints.controllers;
 
+import java.sql.SQLOutput;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -82,6 +83,26 @@ public class BlueprintAPIController {
         }
     }
 
+    // $
+    //curl -i -X POST -HContent-Type:application/json -HAccept:application/json http://localhost:8080/blueprints/add -d '{"author":"Val","points":[{"x":140,"y":14},{"x":14,"y":14},{"x":11,"y":15}],"name":"bpName"}'
+    @RequestMapping(value = "/{author}/add",method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> addBPToAuthor(@PathVariable("author") String author, @RequestBody Blueprint blueprint){
+        try {
+            services.addNewBlueprint(blueprint);
+
+            //obtener datos que se enviarán a través del API
+            Set<Blueprint> data = services.getBlueprintsByAuthor(author);
+            return new ResponseEntity<>(data, HttpStatus.ACCEPTED);
+
+//            return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase() , HttpStatus.CREATED);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(),HttpStatus.FORBIDDEN);
+        }
+    }
+
     //curl -i -X PUT -HContent-Type:application/json -HAccept:application/json http://localhost:8080/blueprints/juan/bpName -d '{"author":"Val","points":[{"x":25,"y":25},{"x":27,"y":27},{"x":28,"y":28}],"name":"bpName"}'
     @RequestMapping(value = "/{author}/{name}",method = RequestMethod.PUT)
     @ResponseBody
@@ -92,6 +113,25 @@ public class BlueprintAPIController {
             bpEdit.setPoints(blueprint.getPoints());
 
             return new ResponseEntity<>( services.getBlueprint(author, name), HttpStatus.CREATED);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.CREATED.getReasonPhrase(),HttpStatus.FORBIDDEN);
+        }
+    }
+
+    // $
+    //curl -i -X PUT -HContent-Type:application/json -HAccept:application/json http://localhost:8080/blueprints/juan/bpName -d '{"author":"Val","points":[{"x":25,"y":25},{"x":27,"y":27},{"x":28,"y":28}],"name":"bpName"}'
+    @RequestMapping(value = "/{author}/{name}",method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<?> deleteBP(@RequestBody Blueprint blueprint,@PathVariable("author") String author, @PathVariable("name") String name){
+        try {
+            System.out.println("ELIMINANDO BLUEPRINT " + name + " DEL AUTOR: " + author);
+
+            Blueprint deletedBlueprint = services.deleteBlueprint(author, name);
+            System.out.println(deletedBlueprint);
+
+            return new ResponseEntity<>( deletedBlueprint, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
