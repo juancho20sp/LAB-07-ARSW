@@ -111,10 +111,15 @@ app = (function(){
                     data = _module_canvas.getCurrentPoints();
                     // $
                     debugger;
-                    _basePoints = [..._basePoints, ...data[0].points];
+                    // _basePoints = [..._basePoints, ...data[0].points];
+                    _basePoints = [..._basePoints, data[0].points[data[0].points.length - 1]];
                 } else {
                     _basePoints = [...data[0].points];
                 }
+
+                // $
+                console.log(_basePoints);
+                
 
                 // let myData = data.length > 0 ? data[0] : data;
 
