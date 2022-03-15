@@ -33,7 +33,7 @@ public class BlueprintsServices {
 
     @Autowired
     @Qualifier("Redundancy")
-    Filter filter;
+     Filter filter;
 
     public void addNewBlueprint(Blueprint bp) throws BlueprintPersistenceException{
         bpp.saveBlueprint(bp);
@@ -71,9 +71,8 @@ public class BlueprintsServices {
      * @return the blueprint of the given name created by the given author
      * @throws BlueprintNotFoundException if there is no such blueprint
      */
-    public Blueprint deleteBlueprint(String author, String name) throws BlueprintNotFoundException{
-        // TODO -> ELIMINAR BLUEPRINT
-        return filter.blueprintFilter(bpp.getBlueprint(author, name));
+    public void deleteBlueprint(String author, String name) throws BlueprintNotFoundException{
+        bpp.deleteBlueprint(author, name);
     }
 
 

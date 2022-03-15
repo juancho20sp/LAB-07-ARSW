@@ -78,7 +78,7 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
         }
 
         if (myBlueprints.size() == 0){
-            throw new BlueprintPersistenceException("No existe el autor");
+            throw new BlueprintPersistenceException("El autor no tiene Blueprints");
         }
 
         return myBlueprints;
@@ -97,7 +97,13 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
     }
 
     @Override
-    public Blueprint deleteBlueprint(String author, String bprintname) throws BlueprintNotFoundException {
-        return null;
+    public void deleteBlueprint(String author, String bprintname) throws BlueprintNotFoundException {
+        Tuple deleteTuple = new Tuple<>(author, bprintname);
+        if(blueprints.containsKey(deleteTuple)){
+            blueprints.remove(deleteTuple);
+        }else{
+            throw new BlueprintNotFoundException("Not found :(");
+        }
+
     }
 }

@@ -8,4 +8,5 @@ public interface Filter {
     public Blueprint blueprintFilter(Blueprint blueprint);
 
     public Set<Blueprint> blueprintsFilter(Set<Blueprint> blueprints);
+
 }

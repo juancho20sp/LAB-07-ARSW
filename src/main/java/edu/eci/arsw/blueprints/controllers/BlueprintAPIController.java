@@ -52,7 +52,7 @@ public class BlueprintAPIController {
         } catch (Exception ex) {
             System.out.println("Catch Exception");
             Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>("No existe el autor mencionado",HttpStatus.valueOf(404));
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.valueOf(404));
         }
     }
 
@@ -124,14 +124,14 @@ public class BlueprintAPIController {
     //curl -i -X PUT -HContent-Type:application/json -HAccept:application/json http://localhost:8080/blueprints/juan/bpName -d '{"author":"Val","points":[{"x":25,"y":25},{"x":27,"y":27},{"x":28,"y":28}],"name":"bpName"}'
     @RequestMapping(value = "/{author}/{name}",method = RequestMethod.DELETE)
     @ResponseBody
-    public ResponseEntity<?> deleteBP(@RequestBody Blueprint blueprint,@PathVariable("author") String author, @PathVariable("name") String name){
+    public ResponseEntity<?> deleteBP(@PathVariable("author") String author, @PathVariable("name") String name){
         try {
             System.out.println("ELIMINANDO BLUEPRINT " + name + " DEL AUTOR: " + author);
 
-            Blueprint deletedBlueprint = services.deleteBlueprint(author, name);
-            System.out.println(deletedBlueprint);
+            services.deleteBlueprint(author, name);
+            System.out.println("Deleted");
 
-            return new ResponseEntity<>( deletedBlueprint, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.getLogger(BlueprintAPIController.class.getName()).log(Level.SEVERE, null, ex);
