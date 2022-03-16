@@ -71,8 +71,8 @@ public class BlueprintsServices {
      * @return the blueprint of the given name created by the given author
      * @throws BlueprintNotFoundException if there is no such blueprint
      */
-    public void deleteBlueprint(String author, String name) throws BlueprintNotFoundException{
-        bpp.deleteBlueprint(author, name);
+    public Blueprint deleteBlueprint(String author, String name) throws BlueprintNotFoundException{
+        return bpp.deleteBlueprint(author, name);
     }
 
 

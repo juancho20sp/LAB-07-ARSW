@@ -128,7 +128,8 @@ public class BlueprintAPIController {
         try {
             System.out.println("ELIMINANDO BLUEPRINT " + name + " DEL AUTOR: " + author);
 
-            services.deleteBlueprint(author, name);
+            Blueprint bpp = services.deleteBlueprint(author, name);
+            System.out.println(bpp);
             System.out.println("Deleted");
 
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
