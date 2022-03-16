@@ -14,6 +14,8 @@ app = (function(){
         let _listOfBlueprints;
         let _currentBlueprint = '';
 
+        let lastSelectedBlueprint;
+
         const _tableBody = $('#table-body');
         const _getBlueprintsBtn = document.querySelector('#getBlueprintsBtn');
         _totalPointsLabel = $('#totalUserPoints');
@@ -28,7 +30,6 @@ app = (function(){
         const _updateCanvasBtn = $('#updateCanvasBtn')[0];
         const _deleteBlueprintBtn = $('#deleteBlueprintBtn')[0];
 
-        // $
         loadEventListeners();
 
         // Functions
@@ -69,17 +70,38 @@ app = (function(){
                 return;
             }
 
-            _listOfBlueprints = mockDataAuthor.map(blueprint => {
-                const data = {
-                    name: blueprint.name,
-                    numberOfPoints: blueprint.points.length
-                };
+            if (mockDataAuthor.length && mockDataAuthor[0] === '' && lastSelectedBlueprint) {
+                _listOfBlueprints = _listOfBlueprints.filter(bp => bp.name !== lastSelectedBlueprint.name);
 
-                return data;
-            });
+                if (_listOfBlueprints.length > 0) {
+                    _listOfBlueprints = mockDataAuthor.map(blueprint => {
+                        const data = {
+                            name: blueprint.name,
+                            numberOfPoints: blueprint.points.length
+                        };
+        
+                        return data;
+                    });
+        
+                    _totalPoints = _listOfBlueprints.reduce((total, { numberOfPoints }) => total + numberOfPoints, 0);
+                } else {
+                    _totalPoints = 0;
+                }
+            } else {
+                _listOfBlueprints = mockDataAuthor.map(blueprint => {
+                    const data = {
+                        name: blueprint.name,
+                        numberOfPoints: blueprint.points.length
+                    };
+    
+                    return data;
+                });
+    
+                _totalPoints = _listOfBlueprints.reduce((total, { numberOfPoints }) => total + numberOfPoints, 0);
+    
+            }
 
-            _totalPoints = _listOfBlueprints.reduce((total, { numberOfPoints }) => total + numberOfPoints, 0);
-
+            
             // Update HTML
             addDataAndPutHTML(_totalPoints);
         };
@@ -94,9 +116,7 @@ app = (function(){
         function draw(blueprintName) {
             _blueprintName.text(`Blueprint: ${blueprintName}`);
 
-            // $
             const _canvas = $('#canvas')[0];
-            // _basePoints = [];
             _currentBlueprint = blueprintName;
             _canvas.width = _canvas.width;
 
@@ -109,10 +129,6 @@ app = (function(){
                     _basePoints = [...data[0].points];
                 }
                 
-
-                // let myData = data.length > 0 ? data[0] : data;
-
-                // const { points } = myData;
 
                 const points = _basePoints;
 
@@ -163,9 +179,6 @@ app = (function(){
         };
 
         function readInputData(blueprintName, callback = myCallback) {
-            // $
-            debugger;
-
             // Clear the existing data
             _listOfBlueprints = [];
             
@@ -189,8 +202,6 @@ app = (function(){
 
         function createBlueprint(event){
             event.preventDefault();
-            // $
-            debugger;
 
             _module_canvas.clear();
             _selectedAuthorName = $('#authorName').val();
@@ -233,8 +244,7 @@ app = (function(){
                     // _module.putBlueprint(author, name, JSON.stringify(blueprint), readInputData );
                     _module.putBlueprint(author, name, JSON.stringify(blueprint), myCallback );
 
-                    // $
-                    _module.getBlueprintsByAuthor(author, myCallback);
+                    setTimeout(_module.getBlueprintsByAuthor(author, myCallback), 1000)
                 }                
             }
         }
@@ -245,6 +255,8 @@ app = (function(){
             const bp = _listOfBlueprints[0];
             if( bp ){
                 var { author, name } = bp;
+
+                lastSelectedBlueprint = bp;
 
                 if (_module.deleteBlueprint) {
                     _module.deleteBlueprint(author, name, JSON.stringify(bp), myCallback );

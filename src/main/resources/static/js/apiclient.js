@@ -47,8 +47,6 @@ var apiclient = (function () {
                 contentType: 'application/json',
                 async: true,
                 success: (data) => {
-                    // $
-                    debugger;
                     if (data.length > 0){
                         callback(null, data);
                     } else {
@@ -66,8 +64,6 @@ var apiclient = (function () {
                 contentType: "application/json",
                 async: true,
                 success: (data) =>{
-                    // $
-                    debugger;
                     if (data.length > 0){
                         callback(null, data);
                     } else {
